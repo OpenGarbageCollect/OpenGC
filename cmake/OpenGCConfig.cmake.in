@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+include("${CMAKE_CURRENT_LIST_DIR}/OpenGCTargets.cmake")
+if(NOT DEFINED OPENGC_HEAP_PROVIDER)
+    set(OPENGC_HEAP_PROVIDER "@OPENGC_DEFAULT_HEAP_PROVIDER@")
+endif()
+if(NOT OPENGC_HEAP_PROVIDER MATCHES "^(marksweep|bump)$")
+    set(OpenGC_FOUND FALSE)
+    set(OpenGC_NOT_FOUND_MESSAGE "Unsupported OPENGC_HEAP_PROVIDER=${OPENGC_HEAP_PROVIDER}")
+    return()
+endif()
+set_property(TARGET OpenGC::heap PROPERTY INTERFACE_LINK_LIBRARIES OpenGC::${OPENGC_HEAP_PROVIDER})
+check_required_components(OpenGC)
